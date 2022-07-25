@@ -74,14 +74,15 @@ static Key keys[] = {
 	{ MODKEY,                       XK_h,      shiftview,      {.i = -1 } },
 	{ MODKEY,                       XK_l,      shiftview,      {.i = +1 } },
 	{ MODKEY,                       XK_comma,  shiftview,      {.i = -1 } },
-	{ MODKEY,                       XK_period, shiftview,      {.i = -1 } },
+	{ MODKEY,                       XK_period, shiftview,      {.i = +1 } },
+  /* { MODKEY|ShiftMask,             XK_Tab,    toggleAttachBelow,     {0} }, */
 	{ MODKEY|Mod1Mask,              XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY,                       XK_c,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_space,  setlayout,      {0} },
+	/* { MODKEY,                       XK_space,  setlayout,      {0} }, */
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
