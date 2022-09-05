@@ -5,6 +5,8 @@ austart copyq
 austart keepassxc
 austart barstatus
 
+bluetoothctl power on
+
 xset r rate 250 30
 
 austart background-interval
