@@ -1,0 +1,49 @@
+--- ./dwm.c	2022-12-09 20:47:43.418893156 +0100
++++ ./dwm.c	2022-12-09 20:47:46.992226389 +0100
+@@ -238,6 +238,8 @@ static void setfocus(Client *c);
+ static void setfullscreen(Client *c, int fullscreen);
+ static void setlayout(const Arg *arg);
+ static void setmfact(const Arg *arg);
++static void shiftview(const Arg *arg);
++static void shiftview_to_not_empty(const Arg *arg);
+ static void setup(void);
+ static void seturgent(Client *c, int urg);
+ static void showhide(Client *c);
+@@ -2005,6 +2007,37 @@ seturgent(Client *c, int urg)
+ 	XFree(wmh);
+ }
+ 
++/** Function to shift the current view to the left/right
++ *
++ * @param: "arg->i" stores the number of tags to shift right (positive value)
++ *          or left (negative value)
++ */
++void
++shiftview(const Arg *arg) {
++       Arg shifted;
++
++       if(arg->i > 0) // left circular shift
++               shifted.ui = (selmon->tagset[selmon->seltags] << arg->i)
++                  | (selmon->tagset[selmon->seltags] >> (LENGTH(tags) - arg->i));
++
++       else // right circular shift
++               shifted.ui = selmon->tagset[selmon->seltags] >> (- arg->i)
++                  | selmon->tagset[selmon->seltags] << (LENGTH(tags) + arg->i);
++
++       view(&shifted);
++}
++
++void
++shiftview_to_not_empty(const Arg *arg) {
++  size_t i = 0;
++  size_t max = LENGTH(tags);
++  do {
++    shiftview(arg);
++    i++;
++  } while (!selmon->sel && i < max);
++}
++
++
+ void
+ showhide(Client *c)
+ {
