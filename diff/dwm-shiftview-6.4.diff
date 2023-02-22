@@ -35,12 +35,37 @@
 +
 +void
 +shiftview_to_not_empty(const Arg *arg) {
-+  size_t i = 0;
-+  size_t max = LENGTH(tags);
-+  do {
-+    shiftview(arg);
-+    i++;
-+  } while (!selmon->sel && i < max);
++  int i;
++  unsigned int tagset;
++  Client *c;
++  Arg shifted;
++
++  // function runs only when single tag is viewed
++  for (tagset = selmon->tagset[selmon->seltags]; tagset; tagset <<= 1){
++    if ((tagset & (TAGMASK - 1)) != 0 && (tagset & (TAGMASK - 1)) != tagset){
++      return;
++    }
++  }
++
++  i = arg->i;
++  tagset = selmon->tagset[selmon->seltags];
++
++  while (-(int)LENGTH(tags) < i && i < (int)LENGTH(tags)) {
++    if(arg->i > 0) { // left circular shift
++      shifted.ui = (tagset << i) | (tagset >> (LENGTH(tags) - i));
++      i++;
++    } else { // right circular shift
++      shifted.ui = tagset >> (- i) | tagset << (LENGTH(tags) + i);
++      i--;
++    }
++    
++    for (c = selmon->stack; c; c = c->snext) {
++      if (tagset & shifted.ui) {
++        view(&shifted);
++        return;
++      }
++    }
++  }
 +}
 +
 +
