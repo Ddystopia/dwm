@@ -53,6 +53,7 @@ static const Layout layouts[] = {
 
 /* key definitions */
 #define MODKEY Mod4Mask
+#define ALTKEY Mod1Mask
 #define TAGKEYS(KEY,TAG) \
 	/* modifier                     key        function        argument */         \
 	{ MODKEY,                       KEY,       view,           {.ui = 1 << TAG} }, \
@@ -86,7 +87,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_comma,  shiftview,      {.i = -1 } },
 	{ MODKEY,                       XK_period, shiftview,      {.i = +1 } },
   /* { MODKEY|ShiftMask,             XK_Tab,    toggleAttachBelow,     {0} }, */
-	{ MODKEY|Mod1Mask,              XK_Return, zoom,           {0} },
+	{ MODKEY|ALTKEY,              XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY,                       XK_c,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
@@ -96,10 +97,12 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
-	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+	{ MODKEY|ALTKEY,                XK_comma,  focusmon,       {.i = -1 } },
+	{ MODKEY|ALTKEY,                XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+	{ MODKEY|ShiftMask|ALTKEY,      XK_comma,  tagmon,         {.i = -1 } },
+	{ MODKEY|ShiftMask|ALTKEY,      XK_period, tagmon,         {.i = +1 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)

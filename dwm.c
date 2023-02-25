@@ -1301,7 +1301,8 @@ manage(Window w, XWindowAttributes *wa)
 		unfocus(selmon->sel, 0);
 	c->mon->sel = c;
 	XkbGetState(dpy, XkbUseCoreKbd, &kbd_state);
-	c->kbdgrp = kbd_state.group;
+	// c->kbdgrp = kbd_state.group;
+	c->kbdgrp = 0;
 	arrange(c->mon);
 	XMapWindow(dpy, c->win);
 	focus(NULL);
