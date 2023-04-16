@@ -857,7 +857,7 @@ drawbar(Monitor *m)
 		stw = getsystraywidth();
 
 	/* draw status first so it can be overdrawn by tags later */
-	if (m == selmon) { /* status is only drawn on selected monitor */
+	if (m == selmon || 1) { /* status is only drawn on selected monitor */
 		drw_setscheme(drw, scheme[SchemeNorm]);
 		tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px extra right padding */
 		drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0);
@@ -2042,7 +2042,7 @@ shiftview_to_not_empty(const Arg *arg) {
   Arg shifted;
 
   // function runs only when single tag is viewed
-  for (tagset = selmon->tagset[selmon->seltags]; tagset; tagset <<= 1){
+  for (tagset = selmon->tagset[selmon->seltags]; tagset; tagset >>= 1){
     if ((tagset & (TAGMASK - 1)) != 0 && (tagset & (TAGMASK - 1)) != tagset){
       return;
     }
@@ -2061,12 +2061,14 @@ shiftview_to_not_empty(const Arg *arg) {
     }
     
     for (c = selmon->stack; c; c = c->snext) {
-      if (tagset & shifted.ui) {
+      if (c->tags & shifted.ui) {
         view(&shifted);
         return;
       }
     }
   }
+  // if nothing is found
+  shiftview(arg);
 }
 
 
@@ -2499,9 +2501,11 @@ updatesizehints(Client *c)
 void
 updatestatus(void)
 {
+	Monitor* m;
 	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
 		strcpy(stext, "dwm-"VERSION);
-	drawbar(selmon);
+	for(m = mons; m; m = m->next)
+    drawbar(m);
 	updatesystray();
 }
 

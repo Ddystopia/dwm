@@ -66,6 +66,8 @@
 +      }
 +    }
 +  }
++  // if nothing is found
++  shiftview(arg);
 +}
 +
 +

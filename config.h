@@ -12,7 +12,7 @@ static const int showsystray        = 1;        /* 0 means no systray */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int user_bh            = 2;        /* 2 is the default spacing around the bar's font */
-static const char *fonts[]          = { "Meslo LG S DZ:size=12","monospace:size=14" };
+static const char *fonts[]          = { "Meslo LG S DZ:size=12","Ddystopian:size=18","monospace:size=12" };
 static const char dmenufont[]       = "Meslo\\ LG\\ S\\ DZ:size=12";
 static const char col_gray1[]       = "#282a36";
 static const char col_gray2[]       = "#ffb86c";
@@ -97,12 +97,10 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-	{ MODKEY|ALTKEY,                XK_comma,  focusmon,       {.i = -1 } },
-	{ MODKEY|ALTKEY,                XK_period, focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-	{ MODKEY|ShiftMask|ALTKEY,      XK_comma,  tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask|ALTKEY,      XK_period, tagmon,         {.i = +1 } },
+	{ MODKEY|ALTKEY,                XK_j,      focusmon,       {.i = -1 } },
+	{ MODKEY|ALTKEY,                XK_k,      focusmon,       {.i = +1 } },
+	{ MODKEY|ALTKEY,                XK_comma,  tagmon,         {.i = -1 } },
+	{ MODKEY|ALTKEY,                XK_period, tagmon,         {.i = +1 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
@@ -184,6 +182,7 @@ static Signal signals[] = {
 	/* signum           function */
 	{ "focusstack",     focusstack },
 	{ "setmfact",       setmfact },
+	{ "shiftview",      shiftview },
 	{ "togglebar",      togglebar },
 	{ "incnmaster",     incnmaster },
 	{ "togglefloating", togglefloating },
