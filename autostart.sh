@@ -1,6 +1,5 @@
 austart sxhkd
 austart picom
-# austart "xfce4-power-manager 2> /dev/null" xfce4-power-manager
 austart copyq
 austart keepassxc
 austart barstatus
