@@ -1,8 +1,9 @@
+#!/bin/bash
+
 austart sxhkd
 austart picom
 austart copyq
 austart keepassxc
-austart barstatus
 austart background-interval
 
 xmodmap -e "keycode 135 = Super_L"
