@@ -1,6 +1,18 @@
---- ./dwm.c	2022-12-09 20:47:43.418893156 +0100
-+++ ./dwm.c	2022-12-09 20:47:46.992226389 +0100
-@@ -238,6 +238,8 @@ static void setfocus(Client *c);
+Description
+===========
+Shift the view to the next or previous tag, wrapping around.
+
+From dwm-shiftview-6.4.diff, whose hunk headers are miscounted the same way
+as pwkl and are recomputed here.
+
+Applies to
+==========
+dwm git master, commit 44dbc68 (2026-03-13)
+
+diff a/dwm.c b/dwm.c
+--- a/dwm.c	2026-03-13 18:27:18.000000000 +0100
++++ b/dwm.c	2026-08-23 13:09:23.467998894 +0200
+@@ -201,6 +201,8 @@
  static void setfullscreen(Client *c, int fullscreen);
  static void setlayout(const Arg *arg);
  static void setmfact(const Arg *arg);
@@ -9,7 +21,7 @@
  static void setup(void);
  static void seturgent(Client *c, int urg);
  static void showhide(Client *c);
-@@ -2005,6 +2007,37 @@ seturgent(Client *c, int urg)
+@@ -1626,6 +1628,64 @@
  	XFree(wmh);
  }
  

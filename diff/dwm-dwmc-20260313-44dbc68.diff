@@ -1,34 +1,17 @@
-From d94cb6f1a553d19127f44dbdc96e8bb5041956c2 Mon Sep 17 00:00:00 2001
-From: Nihal Jere <noocsharp@gmail.com>
-Date: Sat, 21 Mar 2020 15:16:49 -0500
-Subject: [PATCH] dwm-client
+Description
+===========
+Accept commands through a fake root window name, driven by the dwmc script.
 
----
- Makefile     |  2 +-
- config.def.h | 70 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- dwm.c        | 55 +++++++++++++++++++++++++++++++++++++++--
- dwmc         | 40 ++++++++++++++++++++++++++++++
- 4 files changed, 164 insertions(+), 3 deletions(-)
- create mode 100755 dwmc
+From dwm-dwmc-6.2.diff. Context refreshed only.
 
-diff --git a/Makefile b/Makefile
-index 77bcbc0..f837f5c 100644
---- a/Makefile
-+++ b/Makefile
-@@ -38,7 +38,7 @@ dist: clean
- 
- install: all
- 	mkdir -p ${DESTDIR}${PREFIX}/bin
--	cp -f dwm ${DESTDIR}${PREFIX}/bin
-+	cp -f dwm dwmc ${DESTDIR}${PREFIX}/bin
- 	chmod 755 ${DESTDIR}${PREFIX}/bin/dwm
- 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
- 	sed "s/VERSION/${VERSION}/g" < dwm.1 > ${DESTDIR}${MANPREFIX}/man1/dwm.1
-diff --git a/config.def.h b/config.def.h
-index 1c0b587..efbae79 100644
---- a/config.def.h
-+++ b/config.def.h
-@@ -113,3 +113,73 @@ static Button buttons[] = {
+Applies to
+==========
+dwm git master, commit 44dbc68 (2026-03-13)
+
+diff a/config.def.h b/config.def.h
+--- a/config.def.h	2026-03-13 18:27:18.000000000 +0100
++++ b/config.def.h	2026-08-23 13:09:20.666344278 +0200
+@@ -115,3 +115,73 @@
  	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
  };
  
@@ -102,23 +85,22 @@ index 1c0b587..efbae79 100644
 +	{ "setlayout",      setlayout },
 +	{ "setlayoutex",    setlayoutex },
 +};
-diff --git a/dwm.c b/dwm.c
-index 4465af1..aa53706 100644
---- a/dwm.c
-+++ b/dwm.c
-@@ -106,6 +106,11 @@ typedef struct {
- 	const Arg arg;
+diff a/dwm.c b/dwm.c
+--- a/dwm.c	2026-03-13 18:27:18.000000000 +0100
++++ b/dwm.c	2026-08-23 13:09:20.666531540 +0200
+@@ -106,6 +106,11 @@
  } Key;
  
-+typedef struct {
+ typedef struct {
 +	const char * sig;
 +	void (*func)(const Arg *);
 +} Signal;
 +
- typedef struct {
++typedef struct {
  	const char *symbol;
  	void (*arrange)(Monitor *);
-@@ -148,6 +153,7 @@ static void arrange(Monitor *m);
+ } Layout;
+@@ -147,6 +152,7 @@
  static void arrangemon(Monitor *m);
  static void attach(Client *c);
  static void attachstack(Client *c);
@@ -126,7 +108,7 @@ index 4465af1..aa53706 100644
  static void buttonpress(XEvent *e);
  static void checkotherwm(void);
  static void cleanup(void);
-@@ -998,6 +1004,49 @@ keypress(XEvent *e)
+@@ -1012,6 +1018,49 @@
  			keys[i].func(&(keys[i].arg));
  }
  
@@ -176,7 +158,7 @@ index 4465af1..aa53706 100644
  void
  killclient(const Arg *arg)
  {
-@@ -1215,8 +1264,10 @@ propertynotify(XEvent *e)
+@@ -1225,8 +1274,10 @@
  	Window trans;
  	XPropertyEvent *ev = &e->xproperty;
  
@@ -189,11 +171,9 @@ index 4465af1..aa53706 100644
  	else if (ev->state == PropertyDelete)
  		return; /* ignore */
  	else if ((c = wintoclient(ev->window))) {
-diff --git a/dwmc b/dwmc
-new file mode 100755
-index 0000000..5ff8dbc
---- /dev/null
-+++ b/dwmc
+diff a/dwmc b/dwmc
+--- a/dwmc	1970-01-01 01:00:00.000000000 +0100
++++ b/dwmc	2026-08-23 13:09:20.666711039 +0200
 @@ -0,0 +1,40 @@
 +#!/usr/bin/env sh
 +
@@ -235,6 +215,15 @@ index 0000000..5ff8dbc
 +	exit 1
 +	;;
 +esac
--- 
-2.25.1
-
+diff a/Makefile b/Makefile
+--- a/Makefile	2026-03-13 18:27:18.000000000 +0100
++++ b/Makefile	2026-08-23 13:09:20.666758538 +0200
+@@ -32,7 +32,7 @@
+ 
+ install: all
+ 	mkdir -p ${DESTDIR}${PREFIX}/bin
+-	cp -f dwm ${DESTDIR}${PREFIX}/bin
++	cp -f dwm dwmc ${DESTDIR}${PREFIX}/bin
+ 	chmod 755 ${DESTDIR}${PREFIX}/bin/dwm
+ 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
+ 	sed "s/VERSION/${VERSION}/g" < dwm.1 > ${DESTDIR}${MANPREFIX}/man1/dwm.1
