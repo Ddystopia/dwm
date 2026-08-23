@@ -208,6 +208,7 @@ static unsigned int getsystraywidth();
 static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
+static int hasatomprop(Client *c, Atom prop, Atom atom);
 static void incnmaster(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
@@ -1146,6 +1147,26 @@ grabkeys(void)
 							 GrabModeAsync, GrabModeAsync);
 		XFree(syms);
 	}
+}
+
+/* _NET_WM_STATE is a list of atoms, getatomprop() only sees the first one.
+ * 32 is well above the number of states EWMH defines. */
+int
+hasatomprop(Client *c, Atom prop, Atom atom)
+{
+	int format, found = 0;
+	unsigned long i, nitems, dl;
+	unsigned char *p = NULL;
+	Atom da;
+
+	if (XGetWindowProperty(dpy, c->win, prop, 0L, 32L, False, XA_ATOM,
+		&da, &format, &nitems, &dl, &p) == Success && p) {
+		if (format == 32)
+			for (i = 0; i < nitems && !found; i++)
+				found = ((Atom *)p)[i] == atom;
+		XFree(p);
+	}
+	return found;
 }
 
 void
@@ -2645,10 +2666,9 @@ updatetitle(Client *c)
 void
 updatewindowtype(Client *c)
 {
-	Atom state = getatomprop(c, netatom[NetWMState]);
 	Atom wtype = getatomprop(c, netatom[NetWMWindowType]);
 
-	if (state == netatom[NetWMFullscreen])
+	if (hasatomprop(c, netatom[NetWMState], netatom[NetWMFullscreen]))
 		setfullscreen(c, 1);
 	if (wtype == netatom[NetWMWindowTypeDialog])
 		c->isfloating = 1;
