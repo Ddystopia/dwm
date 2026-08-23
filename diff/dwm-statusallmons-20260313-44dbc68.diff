@@ -1,0 +1,35 @@
+Description
+===========
+Draw the status text on every monitor rather than only the selected one.
+
+From the official dwm-statusallmons-6.5.diff, which applies unchanged.
+
+Applies to
+==========
+dwm git master, commit 44dbc68 (2026-03-13)
+
+diff a/dwm.c b/dwm.c
+--- a/dwm.c	2026-03-13 18:27:18.000000000 +0100
++++ b/dwm.c	2026-08-23 13:09:19.302752637 +0200
+@@ -707,7 +707,7 @@
+ 		return;
+ 
+ 	/* draw status first so it can be overdrawn by tags later */
+-	if (m == selmon) { /* status is only drawn on selected monitor */
++	if (m == selmon || 1) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+ 		tw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
+ 		drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
+@@ -2005,9 +2005,11 @@
+ void
+ updatestatus(void)
+ {
++	Monitor* m;
+ 	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
+ 		strcpy(stext, "dwm-"VERSION);
+-	drawbar(selmon);
++	for(m = mons; m; m = m->next)
++		drawbar(m);
+ }
+ 
+ void

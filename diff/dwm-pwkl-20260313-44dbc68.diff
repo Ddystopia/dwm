@@ -1,6 +1,18 @@
-diff --color -up /tmp/dwm-6.2/dwm.c dwm-6.2/dwm.c
---- /tmp/dwm-6.2/dwm.c	2019-02-02 14:55:28.000000000 +0200
-+++ dwm-6.2/dwm.c	2020-12-01 12:20:55.584639058 +0200
+Description
+===========
+Remember the keyboard layout group per window and restore it on focus.
+
+From dwm-pwkl-6.2.diff. That file carries miscounted hunk headers upstream,
+so patch(1) rejects it as malformed partway through; the headers are
+recomputed here.
+
+Applies to
+==========
+dwm git master, commit 44dbc68 (2026-03-13)
+
+diff a/dwm.c b/dwm.c
+--- a/dwm.c	2026-03-13 18:27:18.000000000 +0100
++++ b/dwm.c	2026-08-23 13:09:22.758353319 +0200
 @@ -36,6 +36,7 @@
  #include <X11/Xlib.h>
  #include <X11/Xproto.h>
@@ -9,7 +21,7 @@ diff --color -up /tmp/dwm-6.2/dwm.c dwm-6.2/dwm.c
  #ifdef XINERAMA
  #include <X11/extensions/Xinerama.h>
  #endif /* XINERAMA */
-@@ -97,6 +98,7 @@ struct Client {
+@@ -96,6 +97,7 @@
  	Client *snext;
  	Monitor *mon;
  	Window win;
@@ -17,7 +29,7 @@ diff --color -up /tmp/dwm-6.2/dwm.c dwm-6.2/dwm.c
  };
  
  typedef struct {
-@@ -792,6 +794,7 @@ focus(Client *c)
+@@ -797,6 +799,7 @@
  			selmon = c->mon;
  		if (c->isurgent)
  			seturgent(c, 0);
@@ -25,7 +37,7 @@ diff --color -up /tmp/dwm-6.2/dwm.c dwm-6.2/dwm.c
  		detachstack(c);
  		attachstack(c);
  		grabbuttons(c, 1);
-@@ -1020,6 +1023,7 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1034,6 +1037,7 @@
  	Client *c, *t = NULL;
  	Window trans = None;
  	XWindowChanges wc;
@@ -33,7 +45,7 @@ diff --color -up /tmp/dwm-6.2/dwm.c dwm-6.2/dwm.c
  
  	c = ecalloc(1, sizeof(Client));
  	c->win = w;
-@@ -1071,6 +1075,8 @@ manage(Window w, XWindowAttributes *wa)
+@@ -1083,6 +1087,9 @@
  	if (c->mon == selmon)
  		unfocus(selmon->sel, 0);
  	c->mon->sel = c;
@@ -43,7 +55,7 @@ diff --color -up /tmp/dwm-6.2/dwm.c dwm-6.2/dwm.c
  	arrange(c->mon);
  	XMapWindow(dpy, c->win);
  	focus(NULL);
-@@ -1749,6 +1755,7 @@ toggleview(const Arg *arg)
+@@ -1765,6 +1772,7 @@
  void
  unfocus(Client *c, int setfocus)
  {
@@ -51,7 +63,7 @@ diff --color -up /tmp/dwm-6.2/dwm.c dwm-6.2/dwm.c
  	if (!c)
  		return;
  	grabbuttons(c, 0);
-@@ -1757,6 +1764,8 @@ unfocus(Client *c, int setfocus)
+@@ -1773,6 +1781,8 @@
  		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
  		XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
  	}

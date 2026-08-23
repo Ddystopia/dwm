@@ -1,19 +1,21 @@
-From 37e970479dc5d40e57fc0cbfeaa5e39941483237 Mon Sep 17 00:00:00 2001
-From: Gan Ainm <gan.ainm.riomhphost@gmail.com>
-Date: Wed, 10 Jun 2020 10:59:02 +0000
-Subject: [PATCH] dwm-xdgautostart-6.2.diff
+Description
+===========
+Run autostart_blocking.sh and autostart.sh from the dwm config directory
+on startup.
 
-===================================================================
----
- dwm.1 | 23 +++++++++++++++++
- dwm.c | 82 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 105 insertions(+)
+From dwm-autostart-20210120-cb3f58a.diff. That file declares
+localshare = ".local/share" but its code reads localconfig, so it does not
+compile as published; the declaration is localconfig = ".config" here,
+which is the path its sprintf calls build.
 
-diff --git a/dwm.1 b/dwm.1
-index 13b3729..9533aa6 100644
---- a/dwm.1
-+++ b/dwm.1
-@@ -30,6 +30,14 @@ top left corner.  The tags which are applied to one or more windows are
+Applies to
+==========
+dwm git master, commit 44dbc68 (2026-03-13)
+
+diff a/dwm.1 b/dwm.1
+--- a/dwm.1	2026-03-13 18:27:18.000000000 +0100
++++ b/dwm.1	2026-08-23 13:09:24.861010587 +0200
+@@ -30,6 +30,14 @@
  indicated with an empty square in the top left corner.
  .P
  dwm draws a small border around windows to indicate the focus state.
@@ -28,7 +30,7 @@ index 13b3729..9533aa6 100644
  .SH OPTIONS
  .TP
  .B \-v
-@@ -152,6 +160,21 @@ Toggles focused window between floating and tiled state.
+@@ -152,6 +160,21 @@
  .TP
  .B Mod1\-Button3
  Resize focused window while dragging. Tiled windows will be toggled to the floating state.
@@ -50,10 +52,9 @@ index 13b3729..9533aa6 100644
  .SH CUSTOMIZATION
  dwm is customized by creating a custom config.h and (re)compiling the source
  code. This keeps it fast, secure and simple.
-diff --git a/dwm.c b/dwm.c
-index 4465af1..2156b49 100644
---- a/dwm.c
-+++ b/dwm.c
+diff a/dwm.c b/dwm.c
+--- a/dwm.c	2026-03-13 18:27:18.000000000 +0100
++++ b/dwm.c	2026-08-23 13:09:24.861138120 +0200
 @@ -29,6 +29,7 @@
  #include <string.h>
  #include <unistd.h>
@@ -62,7 +63,7 @@ index 4465af1..2156b49 100644
  #include <sys/wait.h>
  #include <X11/cursorfont.h>
  #include <X11/keysym.h>
-@@ -193,6 +194,7 @@ static void resizeclient(Client *c, int x, int y, int w, int h);
+@@ -193,6 +194,7 @@
  static void resizemouse(const Arg *arg);
  static void restack(Monitor *m);
  static void run(void);
@@ -70,7 +71,7 @@ index 4465af1..2156b49 100644
  static void scan(void);
  static int sendevent(Client *c, Atom proto);
  static void sendmon(Client *c, Monitor *m);
-@@ -235,7 +237,11 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
+@@ -234,7 +236,11 @@
  static void zoom(const Arg *arg);
  
  /* variables */
@@ -78,15 +79,14 @@ index 4465af1..2156b49 100644
 +static const char autostartsh[] = "autostart.sh";
  static const char broken[] = "broken";
 +static const char dwmdir[] = "dwm";
-+static const char localshare[] = ".local/share";
++static const char localconfig[] = ".config";
  static char stext[256];
  static int screen;
  static int sw, sh;           /* X display screen geometry width, height */
-@@ -1380,6 +1386,83 @@ run(void)
- 			handler[ev.type](&ev); /* call handler */
+@@ -1391,6 +1397,83 @@
  }
  
-+void
+ void
 +runautostart(void)
 +{
 +	char *pathpfx;
@@ -163,10 +163,11 @@ index 4465af1..2156b49 100644
 +	free(path);
 +}
 +
- void
++void
  scan(void)
  {
-@@ -2142,6 +2223,7 @@ main(int argc, char *argv[])
+ 	unsigned int i, num;
+@@ -2158,6 +2241,7 @@
  		die("pledge");
  #endif /* __OpenBSD__ */
  	scan();
@@ -174,6 +175,3 @@ index 4465af1..2156b49 100644
  	run();
  	cleanup();
  	XCloseDisplay(dpy);
--- 
-2.27.0
-
