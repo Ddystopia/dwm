@@ -1,0 +1,67 @@
+Description
+===========
+Send XEMBED messages with the _XEMBED atom rather than _NET_WM_NAME.
+
+Xembed is index 1 of the xatom enum and NetWMName is index 1 of the netatom
+enum. Four sendevent() calls in clientmessage() and one in maprequest() index
+Xembed into netatom, so every XEMBED message the embedder sends carries
+message_type _NET_WM_NAME instead of _XEMBED.
+
+The system tray protocol has the embedder complete the XEMBED handshake by
+sending XEMBED_EMBEDDED_NOTIFY once the icon is reparented. Mistyped, it never
+arrives, and the icon stays half embedded: reparented and mapped, but never
+told who its embedder is. updatesystrayiconstate() then sends
+XEMBED_WINDOW_ACTIVATE and XEMBED_WINDOW_DEACTIVATE with the correct atom, so
+the client receives activation changes for an embedding it was never notified
+of.
+
+Qt reports each mistyped message as
+
+    qt.qpa.xcb: Unhandled client message: "_NET_WM_NAME"
+
+which is how this surfaces in practice: keepassxc and telegram each log one
+such line per send as their tray icon docks.
+
+XEMBED_FOCUS_IN and XEMBED_MODALITY_ON are dropped rather than repaired. The
+XEMBED specification has the embedder send FOCUS_IN only when it hands
+keyboard focus to the embedded window, and a tray icon never takes keyboard
+focus. Delivering it makes a Qt client call handleWindowActivated() on the
+icon, treating a 23x23 embedded window as the application's active window.
+MODALITY_ON states that the embedded window is shadowed by a modal dialog and
+should stop responding, which is never true of a tray icon. Both are inert
+while mistyped, so correcting the atom without removing them would introduce
+behaviour the embedder never actually had.
+
+XEMBED_WINDOW_ACTIVATE is kept. The bar that embeds the systray is always
+active, which is what the message states.
+
+Applies to
+==========
+dwm git master, commit 44dbc68 (2026-03-13), with dwm-systray applied.
+
+diff a/dwm.c b/dwm.c
+--- a/dwm.c	2026-09-23 15:45:50.315242946 +0200
++++ b/dwm.c	2026-09-23 15:45:50.317643253 +0200
+@@ -630,11 +630,8 @@
+ 			/* use parents background color */
+ 			swa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
+ 			XChangeWindowAttributes(dpy, c->win, CWBackPixel, &swa);
+-			sendevent(c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+-			/* FIXME not sure if I have to send these events, too */
+-			sendevent(c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_FOCUS_IN, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+-			sendevent(c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+-			sendevent(c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_MODALITY_ON, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
++			sendevent(c->win, xatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
++			sendevent(c->win, xatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+ 			XSync(dpy, False);
+ 			resizebarwin(selmon);
+ 			updatesystray();
+@@ -1346,7 +1343,7 @@
+ 
+ 	Client *i;
+ 	if ((i = wintosystrayicon(ev->window))) {
+-		sendevent(i->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, systray->win, XEMBED_EMBEDDED_VERSION);
++		sendevent(i->win, xatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, systray->win, XEMBED_EMBEDDED_VERSION);
+ 		resizebarwin(selmon);
+ 		updatesystray();
+ 	}
